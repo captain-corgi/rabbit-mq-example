@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"strings"
 
 	"github.com/streadway/amqp"
 )
@@ -30,8 +32,8 @@ func main() {
 
 	// Define queue to send/receive messages
 	var (
-		name       string     = "hello"
-		durable    bool       = false
+		name       string     = "task_queue"
+		durable    bool       = true // Set true to persist queue when server stopped
 		autoDelete bool       = false
 		exclusive  bool       = false
 		noWait     bool       = false
@@ -41,20 +43,31 @@ func main() {
 	failOnError(err, "Failed to declare a queue")
 
 	// Publish a message to queue
-	body := "Hello World!"
+	body := bodyFrom(os.Args)
 	var (
 		exchange  string          = ""
 		key       string          = q.Name
 		mandatory bool            = false
 		immediate bool            = false
 		msg       amqp.Publishing = amqp.Publishing{
-			ContentType: ContentTypeTextPlain,
-			Body:        []byte(body),
+			ContentType:  ContentTypeTextPlain,
+			Body:         []byte(body),
+			DeliveryMode: amqp.Persistent,
 		}
 	)
 	err = ch.Publish(exchange, key, mandatory, immediate, msg)
 	log.Printf("  [x] Sent %s", body)
 	failOnError(err, "Failed to publish a message")
+}
+
+func bodyFrom(args []string) string {
+	s := new(strings.Builder)
+	if (len(args) < 2) || os.Args[1] == "" {
+		s.WriteString("hello")
+	} else {
+		s.WriteString(strings.Join(args[1:], " "))
+	}
+	return s.String()
 }
 
 func failOnError(err error, msg string) {
