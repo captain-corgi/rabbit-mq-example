@@ -1,3 +1,6 @@
+progress:
+	go run cmd/progress/main.go
+
 run-sender:
 	go run cmd/send/main.go
 
