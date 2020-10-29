@@ -7,6 +7,9 @@ run-sender:
 run-receiver:
 	go run cmd/receive/main.go
 
+run-receiver-file-output:
+	go run cmd/receive/main.go > cmd/receive/logs/logs_from_rabbit.log
+
 rabbit-mq-start:
 	brew services start rabbitmq
 

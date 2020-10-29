@@ -12,11 +12,12 @@ var (
 		"https://www.rabbitmq.com/tutorials/tutorial-five-go.html",
 		"https://www.rabbitmq.com/tutorials/tutorial-six-go.html",
 	}
-	inprogress = "https://www.rabbitmq.com/tutorials/tutorial-three-go.html"
+	inprogress = ""
 	finished   = []string{
 		"",
 		"https://www.rabbitmq.com/tutorials/tutorial-one-go.html",
 		"https://www.rabbitmq.com/tutorials/tutorial-two-go.html",
+		"https://www.rabbitmq.com/tutorials/tutorial-three-go.html",
 	}
 )
 
