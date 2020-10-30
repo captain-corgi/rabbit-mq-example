@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/streadway/amqp"
@@ -33,8 +34,8 @@ func ReceiveLog() {
 
 	// Declare exchange for channel
 	var (
-		exName       string     = "logs"
-		exKind       string     = "fanout"
+		exName       string     = "logs_direct"
+		exKind       string     = "direct"
 		exDurable    bool       = true // Set true to persist queue when server stopped
 		exAutoDelete bool       = false
 		exInternal   bool       = false
@@ -56,6 +57,27 @@ func ReceiveLog() {
 	q, err := ch.QueueDeclare(name, durable, autoDelete, exclusive, noWait, args)
 	failOnError(err, "Failed to declare a queue")
 
+	// Check if user not input level
+	if len(os.Args) < 2 {
+		log.Printf("Usage: %s [info] [warning] [error]", os.Args[0])
+		os.Exit(0)
+	}
+
+	for _, s := range os.Args[1:] {
+		log.Printf("Binding queue %s to exchange %s with routing key %s",
+			q.Name, "logs_direct", s)
+
+		// Bind a queue from channel
+		err = ch.QueueBind(
+			q.Name,        // queue name
+			s,             // routing key
+			"logs_direct", // exchange
+			false,
+			nil,
+		)
+		failOnError(err, "Failed to bind a queue")
+	}
+
 	// Consume a message from queue
 	var (
 		queue    string = q.Name
@@ -65,16 +87,6 @@ func ReceiveLog() {
 	)
 	msgs, err := ch.Consume(queue, consumer, autoAck, exclusive, noLocal, noWait, args)
 	failOnError(err, "Failed to register a consumer")
-
-	// Bind a queue from channel
-	err = ch.QueueBind(
-		q.Name, // queue name
-		"",     // routing key
-		"logs", // exchange
-		false,
-		nil,
-	)
-	failOnError(err, "Failed to bind a queue")
 
 	// Receive messages whenever it has pushed to queue using a channel
 	forever := make(chan bool)

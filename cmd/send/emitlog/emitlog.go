@@ -33,8 +33,8 @@ func EmitLog() {
 
 	// Define queue to send/receive messages
 	var (
-		name       string     = "logs"
-		kind       string     = "fanout"
+		name       string     = "logs_direct"
+		kind       string     = "direct"
 		durable    bool       = true // Set true to persist queue when server stopped
 		autoDelete bool       = false
 		internal   bool       = false
@@ -46,8 +46,8 @@ func EmitLog() {
 
 	body := bodyFrom(os.Args)
 	var (
-		exchange  string          = "logs"
-		key       string          = ""
+		exchange  string          = "logs_direct"
+		key       string          = severityFrom(os.Args) // Routing key
 		mandatory bool            = false
 		immediate bool            = false
 		msg       amqp.Publishing = amqp.Publishing{
@@ -75,5 +75,27 @@ func bodyFrom(args []string) string {
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
+	}
+}
+
+const (
+	//Info level
+	Info string = "info"
+	// Warn level
+	Warn string = "warning"
+	// Error level
+	Error string = "error"
+)
+
+func severityFrom(args []string) string {
+	if len(args) < 2 {
+		return Info
+	}
+
+	switch os.Args[1] {
+	case Info, Warn, Error:
+		return os.Args[1]
+	default:
+		return Info
 	}
 }

@@ -8,7 +8,6 @@ import (
 var (
 	playlist = []string{
 		"",
-		"https://www.rabbitmq.com/tutorials/tutorial-four-go.html",
 		"https://www.rabbitmq.com/tutorials/tutorial-five-go.html",
 		"https://www.rabbitmq.com/tutorials/tutorial-six-go.html",
 	}
@@ -18,6 +17,7 @@ var (
 		"https://www.rabbitmq.com/tutorials/tutorial-one-go.html",
 		"https://www.rabbitmq.com/tutorials/tutorial-two-go.html",
 		"https://www.rabbitmq.com/tutorials/tutorial-three-go.html",
+		"https://www.rabbitmq.com/tutorials/tutorial-four-go.html",
 	}
 )
 
