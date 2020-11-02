@@ -13,9 +13,6 @@ import (
 const (
 	//MqConnString describe connection string to connect RabbitMQ server.
 	MqConnString = "amqp://guest:guest@localhost:5672"
-
-	//ContentTypeTextPlain use as content type when publish a message
-	ContentTypeTextPlain = "text/plain"
 )
 
 //ReceiveLog is a receiver for logging
@@ -34,8 +31,8 @@ func ReceiveLog() {
 
 	// Declare exchange for channel
 	var (
-		exName       string     = "logs_direct"
-		exKind       string     = "direct"
+		exName       string     = "logs_topic"
+		exKind       string     = "topic"
 		exDurable    bool       = true // Set true to persist queue when server stopped
 		exAutoDelete bool       = false
 		exInternal   bool       = false
@@ -65,13 +62,13 @@ func ReceiveLog() {
 
 	for _, s := range os.Args[1:] {
 		log.Printf("Binding queue %s to exchange %s with routing key %s",
-			q.Name, "logs_direct", s)
+			q.Name, "logs_topic", s)
 
 		// Bind a queue from channel
 		err = ch.QueueBind(
-			q.Name,        // queue name
-			s,             // routing key
-			"logs_direct", // exchange
+			q.Name,       // queue name
+			s,            // routing key
+			"logs_topic", // exchange
 			false,
 			nil,
 		)
@@ -80,12 +77,15 @@ func ReceiveLog() {
 
 	// Consume a message from queue
 	var (
-		queue    string = q.Name
-		consumer string = ""
-		autoAck  bool   = false // Set to false, if we want to pass incomplete task to others consumers
-		noLocal  bool   = false
+		cQueue     string     = q.Name
+		cConsumer  string     = ""
+		cAutoAck   bool       = false // Set to false, if we want to pass incomplete task to others consumers
+		cExclusive bool       = true
+		cNoLocal   bool       = false
+		cNoWait    bool       = false
+		cArgs      amqp.Table = nil
 	)
-	msgs, err := ch.Consume(queue, consumer, autoAck, exclusive, noLocal, noWait, args)
+	msgs, err := ch.Consume(cQueue, cConsumer, cAutoAck, cExclusive, cNoLocal, cNoWait, cArgs)
 	failOnError(err, "Failed to register a consumer")
 
 	// Receive messages whenever it has pushed to queue using a channel

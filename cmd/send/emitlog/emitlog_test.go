@@ -10,14 +10,15 @@ func Test_severityFrom(t *testing.T) {
 		args []string
 		want string
 	}{
-		"1. Array empty":                {[]string{}, "info"},
-		"2. Array has 1 empty element":  {[]string{""}, "info"},
-		"3. First element is empty":     {[]string{"", "something"}, "info"},
-		"4. First element is info":      {[]string{"info", "something"}, "info"},
-		"5. First element is warning":   {[]string{"warning", "something"}, "warning"},
-		"6. First element is error":     {[]string{"error", "something"}, "error"},
-		"7. First element is something": {[]string{"something", "something"}, "info"},
-		"8. First element is ` `":       {[]string{" ", "something"}, "info"},
+		"1. Array empty":                      {[]string{}, "info"},
+		"2. Array has 1 empty element":        {[]string{""}, "info"},
+		"3. First element is empty":           {[]string{"", "something"}, "info"},
+		"4. First element is info":            {[]string{"info", "something"}, "info"},
+		"5. First element is warning":         {[]string{"warning", "something"}, "warning"},
+		"6. First element is error":           {[]string{"error", "something"}, "error"},
+		"7. First element is something":       {[]string{"something", "something"}, "something"},
+		"8. First element is ` `":             {[]string{" ", "something"}, "info"},
+		"9. First element is `kernel.faltal`": {[]string{"kernel.faltal", "something"}, "kernel.faltal"},
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {

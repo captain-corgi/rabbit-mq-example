@@ -33,8 +33,8 @@ func EmitLog() {
 
 	// Define queue to send/receive messages
 	var (
-		name       string     = "logs_direct"
-		kind       string     = "direct"
+		name       string     = "logs_topic"
+		kind       string     = "topic"
 		durable    bool       = true // Set true to persist queue when server stopped
 		autoDelete bool       = false
 		internal   bool       = false
@@ -46,7 +46,7 @@ func EmitLog() {
 
 	body := bodyFrom(os.Args)
 	var (
-		exchange  string          = "logs_direct"
+		exchange  string          = "logs_topic"
 		key       string          = severityFrom(os.Args) // Routing key
 		mandatory bool            = false
 		immediate bool            = false
@@ -64,10 +64,10 @@ func EmitLog() {
 
 func bodyFrom(args []string) string {
 	s := new(strings.Builder)
-	if (len(args) < 2) || os.Args[1] == "" {
+	if (len(args) < 3) || os.Args[2] == "" {
 		s.WriteString("hello")
 	} else {
-		s.WriteString(strings.Join(args[1:], " "))
+		s.WriteString(strings.Join(args[2:], " "))
 	}
 	return s.String()
 }
@@ -92,10 +92,12 @@ func severityFrom(args []string) string {
 		return Info
 	}
 
-	switch os.Args[1] {
+	switch strings.Trim(os.Args[1], " ") {
 	case Info, Warn, Error:
 		return os.Args[1]
-	default:
+	case "":
 		return Info
+	default:
+		return os.Args[1]
 	}
 }
