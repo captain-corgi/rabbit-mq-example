@@ -29,6 +29,11 @@ run-receiver-kern-or-crit:
 run-receiver-origin:
 	go run cmd/receive/origin/receive_logs_topic.go "kern.*"
 
+run-rpc-client:
+	go run cmd/rpc/client/main.go  
+run-rpc-server:
+	go run cmd/rpc/server/main.go  
+
 rabbit-mq-start:
 	brew services start rabbitmq
 rabbit-mq-stop:
